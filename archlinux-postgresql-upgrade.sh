@@ -64,7 +64,7 @@ echo 'archlinux-postgresql-upgrade: preparing new data files...'
 
 if [ -d /var/lib/postgres/data ]
 then
-    echo 'error: new data files already exist' 1>&2
+    echo 'archlinux-postgresql-upgrade: error: new data files already exist' 1>&2
     exit 1
 fi
 
