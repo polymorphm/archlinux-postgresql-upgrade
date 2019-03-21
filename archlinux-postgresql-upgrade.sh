@@ -44,6 +44,11 @@ then
     exit 1
 fi
 
+if [ ! -f /var/lib/postgres/old-data/pg_ident.conf.saved ]
+then
+    mv -- /var/lib/postgres/old-data/pg_ident.conf /var/lib/postgres/old-data/pg_ident.conf.saved
+fi
+
 if [ ! -f /var/lib/postgres/old-data/pg_hba.conf.saved ]
 then
     mv -- /var/lib/postgres/old-data/pg_hba.conf /var/lib/postgres/old-data/pg_hba.conf.saved
@@ -76,6 +81,7 @@ su -lc'/usr/bin/initdb -D/var/lib/postgres/new-data' -- postgres
 
 cp -p -- /var/lib/postgres/old-data/postgresql.auto.conf /var/lib/postgres/new-data/postgresql.auto.conf
 cp -p -- /var/lib/postgres/old-data/pg_hba.conf.saved /var/lib/postgres/new-data/pg_hba.conf.saved
+cp -p -- /var/lib/postgres/old-data/pg_ident.conf.saved /var/lib/postgres/new-data/pg_ident.conf.saved
 
 echo 'archlinux-postgresql-upgrade: preparing new data files: DONE!'
 
@@ -85,6 +91,8 @@ su -lc"cd -- /var/lib/postgres/new-data && /usr/bin/pg_upgrade -b"$(quote "/opt/
 
 mv -- /var/lib/postgres/new-data/pg_hba.conf /var/lib/postgres/new-data/pg_hba.conf.original
 mv -- /var/lib/postgres/new-data/pg_hba.conf.saved /var/lib/postgres/new-data/pg_hba.conf
+mv -- /var/lib/postgres/new-data/pg_ident.conf /var/lib/postgres/new-data/pg_ident.conf.original
+mv -- /var/lib/postgres/new-data/pg_ident.conf.saved /var/lib/postgres/new-data/pg_ident.conf
 mv -- /var/lib/postgres/new-data /var/lib/postgres/data
 
 echo 'archlinux-postgresql-upgrade: data migration: DONE!'
