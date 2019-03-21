@@ -83,6 +83,7 @@ echo 'archlinux-postgresql-upgrade: data migration...'
 
 su -lc"cd -- /var/lib/postgres/new-data && /usr/bin/pg_upgrade -b"$(quote "/opt/pgsql-$(cat -- /var/lib/postgres/old-data/PG_VERSION)/bin")" -B/usr/bin -d/var/lib/postgres/old-data -D/var/lib/postgres/new-data" -- postgres
 
+mv -- /var/lib/postgres/new-data/pg_hba.conf /var/lib/postgres/new-data/pg_hba.conf.original
 mv -- /var/lib/postgres/new-data/pg_hba.conf.saved /var/lib/postgres/new-data/pg_hba.conf
 mv -- /var/lib/postgres/new-data /var/lib/postgres/data
 
