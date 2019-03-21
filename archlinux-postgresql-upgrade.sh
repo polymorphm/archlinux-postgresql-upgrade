@@ -87,3 +87,5 @@ mv -- /var/lib/postgres/new-data/pg_hba.conf.saved /var/lib/postgres/new-data/pg
 mv -- /var/lib/postgres/new-data /var/lib/postgres/data
 
 echo 'archlinux-postgresql-upgrade: data migration: DONE!'
+
+# vi:ts=4:sw=4:et
