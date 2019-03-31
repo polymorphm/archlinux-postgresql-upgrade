@@ -2,6 +2,12 @@
 
 set -e
 
+if [ "x$#" != "x0" ]
+then
+    echo 'archlinux-postgresql-upgrade: error: invalid args' 1>&2
+    exit 1
+fi
+
 if [ "x$(id -u)" != "x0" ]
 then
     echo 'archlinux-postgresql-upgrade: error: run the utility as root' 1>&2
