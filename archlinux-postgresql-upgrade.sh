@@ -2,15 +2,17 @@
 
 set -e
 
+utility_name='archlinux-postgresql-upgrade'
+
 if [ "x$#" != "x0" ]
 then
-    echo 'archlinux-postgresql-upgrade: error: invalid args' 1>&2
+    echo "$utility_name: error: invalid args" 1>&2
     exit 1
 fi
 
 if [ "x$(id -u)" != "x0" ]
 then
-    echo 'archlinux-postgresql-upgrade: error: run the utility as root' 1>&2
+    echo "$utility_name: error: run the utility as root" 1>&2
     exit 1
 fi
 
@@ -19,7 +21,7 @@ quote ()
     printf "'%s'" "${1//\'/\'\\\'\'}"
 }
 
-echo 'archlinux-postgresql-upgrade: removing pre-old data files...'
+echo "$utility_name: removing pre-old data files..."
 
 rm -rf -- /var/lib/postgres/old-data.removing
 
@@ -32,9 +34,9 @@ fi
 
 rm -rf -- /var/lib/postgres/old-data.removing
 
-echo 'archlinux-postgresql-upgrade: removing pre-old data files: DONE!'
+echo "$utility_name: removing pre-old data files: DONE!"
 
-echo 'archlinux-postgresql-upgrade: preparing old data files...'
+echo "$utility_name: preparing old data files..."
 
 if [ ! -d /var/lib/postgres/old-data ] &&
         [ -d /var/lib/postgres/data ] &&
@@ -46,7 +48,7 @@ fi
 
 if [ ! -d /var/lib/postgres/old-data ]
 then
-    echo 'archlinux-postgresql-upgrade: error: unable to find old data files' 1>&2
+    echo "$utility_name: error: unable to find old data files" 1>&2
     exit 1
 fi
 
@@ -69,13 +71,13 @@ then
     mv -- /var/lib/postgres/old-data/pg_hba.conf.new /var/lib/postgres/old-data/pg_hba.conf
 fi
 
-echo 'archlinux-postgresql-upgrade: preparing old data files: DONE!'
+echo "$utility_name: preparing old data files: DONE!"
 
-echo 'archlinux-postgresql-upgrade: preparing new data files...'
+echo "$utility_name: preparing new data files..."
 
 if [ -d /var/lib/postgres/data ]
 then
-    echo 'archlinux-postgresql-upgrade: error: new data files already exist' 1>&2
+    echo "$utility_name: error: new data files already exist" 1>&2
     exit 1
 fi
 
@@ -89,9 +91,9 @@ cp -p -- /var/lib/postgres/old-data/postgresql.auto.conf /var/lib/postgres/new-d
 cp -p -- /var/lib/postgres/old-data/pg_hba.conf.saved /var/lib/postgres/new-data/pg_hba.conf.saved
 cp -p -- /var/lib/postgres/old-data/pg_ident.conf.saved /var/lib/postgres/new-data/pg_ident.conf.saved
 
-echo 'archlinux-postgresql-upgrade: preparing new data files: DONE!'
+echo "$utility_name: preparing new data files: DONE!"
 
-echo 'archlinux-postgresql-upgrade: data migration...'
+echo "$utility_name: data migration..."
 
 su -lc"cd -- /var/lib/postgres/new-data && /usr/bin/pg_upgrade -b"$(quote "/opt/pgsql-$(cat -- /var/lib/postgres/old-data/PG_VERSION)/bin")" -B/usr/bin -d/var/lib/postgres/old-data -D/var/lib/postgres/new-data" -- postgres
 
@@ -101,6 +103,6 @@ mv -- /var/lib/postgres/new-data/pg_ident.conf /var/lib/postgres/new-data/pg_ide
 mv -- /var/lib/postgres/new-data/pg_ident.conf.saved /var/lib/postgres/new-data/pg_ident.conf
 mv -- /var/lib/postgres/new-data /var/lib/postgres/data
 
-echo 'archlinux-postgresql-upgrade: data migration: DONE!'
+echo "$utility_name: data migration: DONE!"
 
 # vi:ts=4:sw=4:et
