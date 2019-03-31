@@ -3,6 +3,7 @@
 set -e
 
 utility_name='archlinux-postgresql-upgrade'
+os_user='postgres'
 
 if [ "x$#" != "x0" ]
 then
@@ -67,7 +68,7 @@ then
     rm -f -- /var/lib/postgres/old-data/pg_hba.conf.new
     (umask 0077 && touch /var/lib/postgres/old-data/pg_hba.conf.new)
     echo 'local all all trust' >/var/lib/postgres/old-data/pg_hba.conf.new
-    chown -- postgres:postgres /var/lib/postgres/old-data/pg_hba.conf.new
+    chown -- "$os_user:$os_user" /var/lib/postgres/old-data/pg_hba.conf.new
     mv -- /var/lib/postgres/old-data/pg_hba.conf.new /var/lib/postgres/old-data/pg_hba.conf
 fi
 
@@ -83,9 +84,9 @@ fi
 
 rm -rf -- /var/lib/postgres/new-data
 mkdir -m0700 -- /var/lib/postgres/new-data
-chown -- postgres:postgres /var/lib/postgres/new-data
+chown -- "$os_user:$os_user" /var/lib/postgres/new-data
 
-su -lc'/usr/bin/initdb -D/var/lib/postgres/new-data' -- postgres
+su -lc'/usr/bin/initdb -D/var/lib/postgres/new-data' -- "$os_user"
 
 cp -p -- /var/lib/postgres/old-data/postgresql.auto.conf /var/lib/postgres/new-data/postgresql.auto.conf
 cp -p -- /var/lib/postgres/old-data/pg_hba.conf.saved /var/lib/postgres/new-data/pg_hba.conf.saved
@@ -95,7 +96,7 @@ echo "$utility_name: preparing new data files: DONE!"
 
 echo "$utility_name: data migration..."
 
-su -lc"cd -- /var/lib/postgres/new-data && /usr/bin/pg_upgrade -b"$(quote "/opt/pgsql-$(cat -- /var/lib/postgres/old-data/PG_VERSION)/bin")" -B/usr/bin -d/var/lib/postgres/old-data -D/var/lib/postgres/new-data" -- postgres
+su -lc"cd -- /var/lib/postgres/new-data && /usr/bin/pg_upgrade -b"$(quote "/opt/pgsql-$(cat -- /var/lib/postgres/old-data/PG_VERSION)/bin")" -B/usr/bin -d/var/lib/postgres/old-data -D/var/lib/postgres/new-data" -- "$os_user"
 
 mv -- /var/lib/postgres/new-data/pg_hba.conf /var/lib/postgres/new-data/pg_hba.conf.original
 mv -- /var/lib/postgres/new-data/pg_hba.conf.saved /var/lib/postgres/new-data/pg_hba.conf
